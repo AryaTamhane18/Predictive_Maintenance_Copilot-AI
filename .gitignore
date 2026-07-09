@@ -1,0 +1,45 @@
+# =====================================================
+# Python
+# =====================================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Environment Variables
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing & Cache
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Build files
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
