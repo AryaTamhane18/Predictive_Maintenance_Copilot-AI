@@ -423,6 +423,7 @@ M.Sc. Big Data and Artificial Intelligence — SRH University of Applied Science
 
 **Rudra Pingale**  
 M.Sc. Big Data and Artificial Intelligence — SRH University of Applied Sciences Heidelberg (Leipzig Campus)
+[GitHub](https://github.com/rudrapingle) · [LinkedIn](https://www.linkedin.com/in/rudra-pingle-07114925a/)
 
 ---
 
