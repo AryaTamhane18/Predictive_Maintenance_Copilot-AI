@@ -328,23 +328,78 @@ image_file   file    optional machine photo (jpg/png)
 
 ---
 
+## ⚙️ Components
+
+| File | Role |
+|---|---|
+| `tools/anomaly.py` | RMS % deviation detection — 3 machines, 9,464 sensor files |
+| `tools/rag.py` | ChromaDB RAG over SKF bearing manual — 1,721 chunks |
+| `tools/history.py` | SQLite fault history — save and retrieve past faults |
+| `mcp_server.py` | MCP tool server — 3 tools exposed to LangGraph agents |
+| `agents/monitor.py` | Anomaly check + ESCALATE / NORMAL decision |
+| `agents/diagnosis.py` | Root cause via RAG + history + optional LLaVA vision |
+| `agents/recommendation.py` | Structured Pydantic fault report generation |
+| `pipeline.py` | LangGraph graph — wires all 3 agents with shared state |
+| `api.py` | FastAPI REST backend |
+| `dashboard.py` | Streamlit HITL dashboard |
+| `models.py` | Pydantic schemas — AnomalyResult, FaultReport |
+
 ---
 
-## 🧠 Skills Demonstrated
+## 🛠️ MCP Tools
 
-| Skill | How it appears in this project |
+| Tool | Description |
 |---|---|
-| **Agentic AI** | LangGraph orchestrates 3 autonomous agents with conditional routing |
-| **Generative AI** | Mistral generates interpretations, diagnoses, and fault reports |
-| **Multi-agent systems** | Monitor → Diagnosis → Recommendation with shared state graph |
-| **Tool calling** | Agents call MCP tools (detect_anomaly, search_manuals, get_history) |
-| **RAG pipeline** | PDF → chunks → embeddings → ChromaDB → semantic retrieval |
-| **Multimodal AI** | LLaVA reads machine photos alongside sensor time-series data |
-| **Local LLMs** | Ollama serves Mistral + LLaVA + nomic-embed — zero cloud dependency |
-| **Structured output** | Pydantic validates all agent outputs into typed schemas |
-| **Human-in-the-loop** | Engineer reviews and approves before any fault is logged |
-| **FastAPI** | REST backend with typed endpoints and Swagger UI |
-| **Data analysis** | RMS computation, per-channel baseline, percentage deviation |
+| `tool_detect_anomaly` | RMS % deviation analysis on bearing sensor data |
+| `tool_search_manuals` | RAG search over SKF bearing maintenance manual |
+| `tool_get_history` | Retrieve past fault records for a given asset |
+
+---
+
+## 🧪 Example Output
+
+**Fault detected:**
+
+```json
+{
+  "status": "anomaly_detected",
+  "machine_id": "bearing_1",
+  "fault_report": {
+    "asset_id": "BEARING_01",
+    "machine_label": "Motor line bearing",
+    "fault_type": "Fretting Corrosion and Forced Fracture",
+    "severity": "Critical",
+    "recommended_action": "Inspect and replace the damaged motor line bearing immediately. Investigate the cause of fretting corrosion to prevent future occurrences.",
+    "manual_reference": "SKF-bearing-maintenance-handbook.pdf, Fig. 22",
+    "confidence": "high",
+    "analysis_mode": "both_confirm"
+  }
+}
+```
+
+**No fault:**
+
+```json
+{
+  "status": "normal",
+  "machine_id": "bearing_2",
+  "message": "No anomaly detected. Machine is operating normally."
+}
+```
+
+---
+
+## 🤖 Agent Behaviour
+
+| Scenario | Behaviour |
+|---|---|
+| Healthy bearing (early files) | Monitor Agent → NORMAL → pipeline stops |
+| Degrading bearing (mid files) | Monitor Agent → ESCALATE → full diagnosis runs |
+| Failed bearing (late files) | Monitor Agent → ESCALATE → CRITICAL report generated |
+| Image uploaded, damage visible | LLaVA inspects → `both_confirm` mode → stronger diagnosis |
+| Image uploaded, no damage visible | `sensor_primary` mode → internal fault flagged |
+| No image uploaded | Sensor data + manual RAG drives diagnosis |
+| Repeated fault on same asset | History tool surfaces past faults for context |
 
 ---
 
@@ -364,7 +419,7 @@ In a production setting, the CSV file reader would be replaced by a live MQTT/Io
 
 **Arya Tamhane**  
 M.Sc. Big Data and Artificial Intelligence — SRH University of Applied Sciences Heidelberg (Leipzig Campus)  
-[GitHub](https://github.com/AryaTamhane18) · [LinkedIn](https://linkedin.com/in/arya-tamhane)
+[GitHub](https://github.com/AryaTamhane18) · [LinkedIn](https://www.linkedin.com/in/arya-tamhane-543a21231/)
 
 **Rudra Pingale**  
 M.Sc. Big Data and Artificial Intelligence — SRH University of Applied Sciences Heidelberg (Leipzig Campus)
@@ -373,7 +428,7 @@ M.Sc. Big Data and Artificial Intelligence — SRH University of Applied Science
 
 ## 📄 Licence
 
-MIT — see [LICENSE](LICENSE)
+MIT
 
 The NASA IMS Bearing Dataset is publicly available via the NASA Prognostics Data Repository.  
 The SKF Bearing Maintenance Handbook is publicly available on the MIT server.
