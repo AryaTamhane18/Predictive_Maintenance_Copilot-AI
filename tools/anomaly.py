@@ -1,8 +1,9 @@
 # tools/anomaly.py
-# RMS-based anomaly detection
-# Uses percentage deviation from baseline instead of Z-score
-# Z-score fails when std is extremely small (bearing_1, bearing_4)
-# bearing_2 uses Z-score because it has a clear dramatic spike
+# Uses percentage deviation from baseline RMS for all machines
+# Z-score was dropped: healthy std is near zero on bearing_1 and bearing_4,
+# which makes the score explode on insignificant changes
+
+
 
 import os
 import sys
@@ -211,7 +212,7 @@ def detect_anomaly(machine_id: str,
         total_files    = total,
         is_anomalous   = is_anomalous,
         channel        = worst_channel,
-        max_z_score    = round(worst_pct, 2),
+        deviation_pct  = round(worst_pct, 2),
         anomaly_count  = anomaly_count,
         total_readings = len(target_df),
         severity       = severity,
@@ -285,7 +286,7 @@ if __name__ == "__main__":
         for label, fidx in test_points:
             r = detect_anomaly(machine_id, fidx)
             print(f"  {label:<20} {fidx:>6} "
-                  f"{r.max_z_score:>11.2f}% "
+                  f"{r.deviation_pct:>11.2f}% "
                   f"{r.severity:>10} "
                   f"{r.channel:>8} "
                   f"{str(r.is_anomalous):>8}")
@@ -296,5 +297,3 @@ if __name__ == "__main__":
     print("  bearing_2: healthy=False, fault at 80%+ = True")
     print("  bearing_4: healthy=False, fault at 95%+ = True")
     print("=" * 70)
-
-    print("Hi")
