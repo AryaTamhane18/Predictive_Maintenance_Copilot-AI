@@ -14,15 +14,15 @@ init_db()
 def detect_anomaly_tool(machine_id: str = "bearing_1",
                         file_index: int = -1) -> dict:
     """
-    Detect anomalies in bearing sensor data using Z-score analysis.
-    Returns whether an anomaly exists, which channel is affected,
-    and the Z-score value.
+    Detect anomalies in bearing sensor data by comparing RMS vibration
+    against the machine's healthy baseline. Returns whether an anomaly
+    exists, which channel is affected, and the percentage deviation.
     """
     result = detect_anomaly(machine_id=machine_id, file_index=file_index)
     return {
         "machine_id": result.machine_id,
         "is_anomalous": result.is_anomalous,
-        "max_z_score": result.max_z_score,
+        "deviation_pct": result.deviation_pct,
         "channel": result.channel,
         "severity": result.severity,
         "anomaly_count": result.anomaly_count,
